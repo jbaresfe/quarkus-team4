@@ -32,5 +32,6 @@
   </dependencyManagement>
   <modules>
     <module>octopus</module>
+    <module>window-aggregation</module>
   </modules>
 </project>
