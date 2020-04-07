@@ -3,15 +3,10 @@
 ```json
 {
   "query": "person/event/location to query from",
-  "data": [
-    {
-      "handle": "poster's twitter handle",
-      "timestamp": "timestamp of post in UTC format",
-      "post": "String containing full contents of post",
-      "hashtags": ["list", "of", "hashtags", "in", "post"]
-    },
-    ...
-  ]
+  "handle": "poster's twitter handle",
+  "timestamp": "timestamp of post in UTC format",
+  "post": "String containing full contents of post",
+  "hashtags": ["list", "of", "hashtags", "in", "post"]
 }
 ```
 
