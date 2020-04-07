@@ -78,7 +78,7 @@ public class ExampleResource {
 			
 		FilterQuery filter = new FilterQuery();
 		String hashtag = "#" + topic;
-	    String keywords[] = {hashtag};
+	    	String keywords[] = {hashtag};
 		filter.track(keywords);
 		twitterStream.addListener(statusListener);
 		twitterStream.filter(filter);
