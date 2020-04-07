@@ -1,0 +1,35 @@
+apiVersion: kafka.strimzi.io/v1beta1
+kind: Kafka
+metadata:
+  labels:
+    app: twitter-sentiment
+  name: twitter
+spec:
+  entityOperator:
+    topicOperator: {}
+    userOperator: {}
+  kafka:
+    config:
+      auto.create.topics.enable: 'true'
+      default.replication.factor: 3
+      offsets.topic.replication.factor: 3
+      transaction.state.log.min.isr: 2
+      transaction.state.log.replication.factor: 3
+    jvmOptions:
+      gcLoggingEnabled: false
+    listeners:
+      plain: {}
+    replicas: 3
+    storage:
+      deleteClaim: true
+      size: 100Gi
+      type: persistent-claim
+  kafkaExporter:
+    groupRegex: .*
+    topicRegex: .*
+  zookeeper:
+    replicas: 3
+    storage:
+      deleteClaim: true
+      size: 100Gi
+      type: persistent-claim
