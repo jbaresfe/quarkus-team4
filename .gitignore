@@ -19,3 +19,4 @@ build/
 *.log*
 /classes/
 .factorypath
+/lsp/conf

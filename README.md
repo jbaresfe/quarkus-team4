@@ -1,5 +1,6 @@
 ## Data format for Kafka topics
 ### Topic: All hashtags with metadata
+**Topic Name:** twitter-posts
 ```json
 {
   "query": "person/event/location to query from",
@@ -11,6 +12,7 @@
 ```
 
 ### Topic: windowed data
+**Topic Name:** hashtag-counts
 ```json
 {
   "startWindow": "timestamp of start of window data",
@@ -27,7 +29,7 @@
 
 ## Deploy Octopus in OpenShift Cluster
 1. Login into Openshift Cluster
-2. Execute following maven command
+2. Execute following maven command from the `octopus` directory
 ````
-mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
+./mvnw clean package -Dquarkus.kubernetes.deploy=true -DskipTests
 ````
