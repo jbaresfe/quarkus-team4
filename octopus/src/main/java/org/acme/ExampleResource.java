@@ -27,10 +27,10 @@ public class ExampleResource {
 	 public static ConfigurationBuilder getConfigurationBuilder() {
 			ConfigurationBuilder cb = new ConfigurationBuilder();
 			return cb.setDebugEnabled(true)
-			  .setOAuthConsumerKey("ry4rxObtDITrDl3iCDMh2sLdf")
-			  .setOAuthConsumerSecret("5EVDpqL8dvk96F7vYrPgl8kzAquWG4oXbi6MihqPO89Z49CAoz")
-			  .setOAuthAccessToken("578677046-sWfVlpJ9Pd8bWvIFrky4qlZ2wxdysi2mbOPA27jP")
-			  .setOAuthAccessTokenSecret("8CeYONHNdoFLYiF1HRpFaQiSgvviIZ59uJJGPQSptleDn");
+			  .setOAuthConsumerKey("********")
+			  .setOAuthConsumerSecret("*******")
+			  .setOAuthAccessToken("*******")
+			  .setOAuthAccessTokenSecret("*******");
 		}
 	 
 	 @GET
