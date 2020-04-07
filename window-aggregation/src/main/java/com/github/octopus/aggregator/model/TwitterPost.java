@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -37,12 +38,22 @@ public class TwitterPost {
 		this.query = query;
 	}
 
+	public TwitterPost withQuery(String query) {
+		setQuery(query);
+		return this;
+	}
+
 	public String getHandle() {
 		return this.handle;
 	}
 
 	public void setHandle(String handle) {
 		this.handle = handle;
+	}
+
+	public TwitterPost withHandle(String handle) {
+		setHandle(handle);
+		return this;
 	}
 
 	public Instant getTimestamp() {
@@ -53,6 +64,11 @@ public class TwitterPost {
 		this.timestamp = timestamp;
 	}
 
+	public TwitterPost withTimestamp(Instant timestamp) {
+		setTimestamp(timestamp);
+		return this;
+	}
+
 	public String getPost() {
 		return this.post;
 	}
@@ -61,11 +77,32 @@ public class TwitterPost {
 		this.post = post;
 	}
 
+	public TwitterPost withPost(String post) {
+		setPost(post);
+		return this;
+	}
+
 	public Set<String> getHashtags() {
 		return Collections.unmodifiableSet(this.hashtags);
 	}
 
 	public void setHashtags(Collection<String> hashtags) {
 		this.hashtags.addAll(Optional.ofNullable(hashtags).orElseGet(HashSet::new));
+	}
+
+	public TwitterPost withHashtags(Collection<String> hashtags) {
+		setHashtags(hashtags);
+		return this;
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", TwitterPost.class.getSimpleName() + "[", "]")
+			.add("query='" + this.query + "'")
+			.add("handle='" + this.handle + "'")
+			.add("timestamp=" + this.timestamp)
+			.add("post='" + this.post + "'")
+			.add("hashtags=" + this.hashtags)
+			.toString();
 	}
 }

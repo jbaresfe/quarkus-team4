@@ -1,17 +1,22 @@
 package com.github.octopus.aggregator.model;
 
 import java.util.Objects;
+import java.util.StringJoiner;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
 public class AggregationMetric {
 	private String hashtag;
-	private long count;
+	private long count = 0;
 
 	public AggregationMetric(String hashtag, long count) {
 		this.hashtag = hashtag;
 		this.count = count;
+	}
+
+	public AggregationMetric(String hashtag) {
+		this(hashtag, 1);
 	}
 
 	public AggregationMetric() {
@@ -26,12 +31,26 @@ public class AggregationMetric {
 		this.hashtag = hashtag;
 	}
 
+	public AggregationMetric withHashtag(String hashTag) {
+		setHashtag(hashTag);
+		return this;
+	}
+
 	public long getCount() {
 		return this.count;
 	}
 
 	public void setCount(long count) {
 		this.count = count;
+	}
+
+	public void incrementCount() {
+		this.count++;
+	}
+
+	public AggregationMetric withCount(long count) {
+		setCount(count);
+		return this;
 	}
 
 	@Override
@@ -51,5 +70,13 @@ public class AggregationMetric {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.hashtag);
+	}
+
+	@Override
+	public String toString() {
+		return new StringJoiner(", ", AggregationMetric.class.getSimpleName() + "[", "]")
+			.add("hashtag='" + this.hashtag + "'")
+			.add("count=" + this.count)
+			.toString();
 	}
 }
