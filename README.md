@@ -24,3 +24,10 @@
   ]
 }
 ```
+
+## Deploy Octopus in OpenShift Cluster
+1. Login into Openshift Cluster
+2. Execute following maven command
+````
+mvn clean package -Dquarkus.kubernetes.deploy=true -DskipTests
+````
