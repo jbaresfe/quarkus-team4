@@ -21,7 +21,7 @@ public class DummyDataProducerResource {
 	private final Emitter<TwitterPost> postEmitter;
 
 	@Inject
-	public DummyDataProducerResource(WindowAggregationPropertiesConfig config, @Channel("twitter-posts") Emitter<TwitterPost> postEmitter) {
+	public DummyDataProducerResource(WindowAggregationPropertiesConfig config, @Channel("twitter-posts-out") Emitter<TwitterPost> postEmitter) {
 		this.config = config;
 		this.postEmitter = postEmitter;
 	}

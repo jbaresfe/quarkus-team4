@@ -19,12 +19,8 @@
     </dependency>
 <!--    <dependency>-->
 <!--      <groupId>io.quarkus</groupId>-->
-<!--      <artifactId>quarkus-smallrye-health</artifactId>-->
+<!--      <artifactId>quarkus-kafka-streams</artifactId>-->
 <!--    </dependency>-->
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-kafka-streams</artifactId>
-    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-container-image-s2i</artifactId>
@@ -42,6 +38,10 @@
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
       <version>${assertj.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-scheduler</artifactId>
     </dependency>
   </dependencies>
   <build>
