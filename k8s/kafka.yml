@@ -33,3 +33,17 @@ spec:
       deleteClaim: true
       size: 100Gi
       type: persistent-claim
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  labels:
+    strimzi.io/cluster: twitter
+  name: twitter-posts
+---
+apiVersion: kafka.strimzi.io/v1beta1
+kind: KafkaTopic
+metadata:
+  labels:
+    strimzi.io/cluster: twitter
+  name: hashtag-counts
