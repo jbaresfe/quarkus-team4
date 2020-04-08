@@ -2,6 +2,7 @@ package com.github.octopus.aggregator.model;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -60,7 +61,7 @@ public class Aggregation {
 		this.endWindow = Instant.now();
 
 		// First go through all the hashtags which have already been recorded and increment the count
-		Set<String> postHashtags = post.getHashtags();
+		Collection<String> postHashtags = post.getHashtags();
 		Set<String> currentHashtags = this.metrics.stream()
 			.map(AggregationMetric::getHashtag)
 			.collect(Collectors.toSet());

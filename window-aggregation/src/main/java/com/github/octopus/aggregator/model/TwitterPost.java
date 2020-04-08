@@ -1,12 +1,12 @@
 package com.github.octopus.aggregator.model;
 
 import java.time.Instant;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -16,18 +16,23 @@ public class TwitterPost {
 	private String handle;
 	private Instant timestamp;
 	private String post;
-	private final Set<String> hashtags = new HashSet<>();
+	private List<String> hashtags = new ArrayList<>();
 
 	public TwitterPost() {
 
 	}
 
-	public TwitterPost(String query, String handle, Instant timestamp, String post, Collection<String> hashtags) {
+	public TwitterPost(String query, String handle, Instant timestamp, String post, List<String> hashtags) {
 		this.query = query;
 		this.handle = handle;
 		this.timestamp = timestamp;
 		this.post = post;
-		this.hashtags.addAll(Optional.ofNullable(hashtags).orElseGet(HashSet::new));
+		this.hashtags.addAll(Optional.ofNullable(hashtags)
+			.orElseGet(Collections::emptyList)
+			.stream()
+			.distinct()
+			.collect(Collectors.toList())
+		);
 	}
 
 	public String getQuery() {
@@ -82,15 +87,20 @@ public class TwitterPost {
 		return this;
 	}
 
-	public Set<String> getHashtags() {
-		return Collections.unmodifiableSet(this.hashtags);
+	public List<String> getHashtags() {
+		return Collections.unmodifiableList(this.hashtags);
 	}
 
-	public void setHashtags(Collection<String> hashtags) {
-		this.hashtags.addAll(Optional.ofNullable(hashtags).orElseGet(HashSet::new));
+	public void setHashtags(List<String> hashtags) {
+		this.hashtags.addAll(Optional.ofNullable(hashtags)
+			.orElseGet(Collections::emptyList)
+			.stream()
+			.distinct()
+			.collect(Collectors.toList())
+		);
 	}
 
-	public TwitterPost withHashtags(Collection<String> hashtags) {
+	public TwitterPost withHashtags(List<String> hashtags) {
 		setHashtags(hashtags);
 		return this;
 	}
