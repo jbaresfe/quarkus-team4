@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import org.acme.domain.TwitterSentiment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.acme.config.OctopusTwitterPropertiesConfig;
+import javax.inject.Inject;
 
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
@@ -25,6 +27,15 @@ import twitter4j.conf.ConfigurationBuilder;
 @Path("/twitter")
 public class TwitterResource {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger("TwitterResource");
+	private final OctopusTwitterPropertiesConfig config;
+
+
+	@Inject
+	public TwitterResource(OctopusTwitterPropertiesConfig config) {
+		this.config = config;
+	}
+
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/hello")
@@ -32,12 +43,12 @@ public class TwitterResource {
 		return "hello world";
 	}
 
-	public static ConfigurationBuilder getConfigurationBuilder() {
+	public ConfigurationBuilder getConfigurationBuilder() {
 		ConfigurationBuilder cb = new ConfigurationBuilder();
-		return cb.setDebugEnabled(true).setOAuthConsumerKey("*********")
-				.setOAuthConsumerSecret("********")
-				.setOAuthAccessToken("*************")
-				.setOAuthAccessTokenSecret("***********");
+		return cb.setDebugEnabled(true).setOAuthConsumerKey(this.config.twitterapiOauthConsumerKey())
+				.setOAuthConsumerSecret(this.config.twitterapiOauthConsumerSecret())
+				.setOAuthAccessToken(this.config.twitterapiOauthAccessToken())
+				.setOAuthAccessTokenSecret(this.config.twitterapiOauthAccessTokenSecret());
 	}
 
 	@GET
