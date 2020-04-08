@@ -19,6 +19,10 @@ import com.github.octopus.aggregator.model.TwitterPost;
 import com.github.octopus.aggregator.util.FunctionalReadWriteLockGuard;
 import io.quarkus.scheduler.Scheduled;
 
+/**
+ * Class responsible for doing time-based data windowing and aggregation
+ * @author Eric Deandrea
+ */
 @ApplicationScoped
 public class DataAggregator {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DataAggregator.class);
@@ -33,12 +37,19 @@ public class DataAggregator {
 		this.aggregationEmitter = aggregationEmitter;
 	}
 
+	/**
+	 * Records incoming posts
+	 * @param post The incoming {@link TwitterPost}
+	 */
 	@Incoming("twitter-posts-in")
 	public void recordPost(TwitterPost post) {
 		LOGGER.info("Got incoming post: {}", post);
 		this.lockGuard.doInWriteLock(() -> this.posts.add(post));
 	}
 
+	/**
+	 * Processes an aggregation. Runs every 10 seconds.
+	 */
 	@Scheduled(every = "10s")
 	public void processAggregation() {
 		LOGGER.info("Processing aggregation from last {}ms", this.config.aggregationTimeWindowMillis());
