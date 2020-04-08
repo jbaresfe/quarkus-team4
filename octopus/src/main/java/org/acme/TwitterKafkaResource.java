@@ -29,11 +29,10 @@ import twitter4j.conf.ConfigurationBuilder;
 import org.acme.domain.TwitterPost;
 
 @Path("/kafka")
-public class TwitterKafkaResource extends TwitterPost{
+public class TwitterKafkaResource extends TwitterPost {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger("TwitterResource");
 	private final OctopusTwitterPropertiesConfig config;
-
 
 	@Inject
 	public TwitterKafkaResource(OctopusTwitterPropertiesConfig config) {
@@ -58,33 +57,36 @@ public class TwitterKafkaResource extends TwitterPost{
 	@GET
 	@Path("/{query}")
 	@Produces(MediaType.TEXT_PLAIN)
-	public List<TwitterPost> streamTwitter(@PathParam("query") String query) throws TwitterException, InterruptedException {
+	public List<TwitterPost> streamTwitter(@PathParam("query") String query)
+			throws TwitterException, InterruptedException {
 		List<TwitterPost> twitterPosts = new ArrayList<TwitterPost>();
-		
+
 		TwitterStream twitterStream = new TwitterStreamFactory(getConfigurationBuilder().build()).getInstance();
-		//List<String> tweets = new ArrayList<String>();
+		// List<String> tweets = new ArrayList<String>();
 
 		StatusListener statusListener = new StatusListener() {
 
 			public void onStatus(Status status) {
-				//String tweetString = query + "@" + status.getUser().getScreenName() + ":" + status.getCreatedAt().toString() + status.getText() + status.getHashtagEntities();
-				//System.out.println(tweetString);
-				//tweets.add(tweetString);
+				// String tweetString = query + "@" + status.getUser().getScreenName() + ":" +
+				// status.getCreatedAt().toString() + status.getText() +
+				// status.getHashtagEntities();
+				// System.out.println(tweetString);
+				// tweets.add(tweetString);
 				String handle = "@" + status.getUser().getScreenName();
 				Instant timestamp = status.getCreatedAt().toInstant();
 				String post = status.getText().toString();
-				List<String> hashtagList = new ArrayList<String>(); 
+				List<String> hashtagList = new ArrayList<String>();
 				HashtagEntity[] tags = status.getHashtagEntities();
-				
+
 				for (HashtagEntity tag : tags) {
-	                String hash = tag.getText();
-	                hashtagList.add(hash);
-	            } 
-				
+					String hash = tag.getText();
+					hashtagList.add(hash);
+				}
+
 				TwitterPost somePost = new TwitterPost(query, handle, timestamp, post, hashtagList);
-				
+
 				twitterPosts.add(somePost);
-				
+
 			}
 
 			public void onException(Exception ex) {
