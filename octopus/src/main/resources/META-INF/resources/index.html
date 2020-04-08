@@ -2,8 +2,9 @@
     <head>
         <title>Quarkus Octopus Twitter App</title>
         <meta charset="UTF-8">
-        <script src="d3.min.js"></script>
-        <script src="d3.layout.cloud.js"></script>
+        <script src="//code.angularjs.org/snapshot/angular.min.js"></script>
+        <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+
 
         <style>
             h1, h2, h3, h4, h5, h6 {
@@ -98,21 +99,20 @@
             }
     
         </style>
-        <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         
     </head>
-    <body>
+    <body ng-app="intervalExample">
         <div class="header"><img height="200" width="220" src="octopus.png"></div>
         <div class="container">
             <div class="left-column">
-                <p class="lead"> Enter a query to get current Twitter Sentements</p>
-                <div>
-                    Watch: <input type="text" name="twitterQuery" value="@RedHat"> <input onclick="sendQuery()" type="button" name="startQuery" value="Go">
-                </div>
 
                 <p class="lead">Octopus Twitter Sentiments Results</p>
-                <div ng-app = "" ng-controller = "sentimentsController">
-                
+                <div ng-controller = "sentimentsController">
+                    <div>
+                        <p> Enter a query to get current Twitter Sentements</p>
+                        Query: <input type="text" id="twitterQuery" name="twitterQuery" value="@RedHat"> <input data-ng-click="startSentiments()" type="button" name="startQuery" value="Go">
+                    </div>
+                    
                    <table>
                       <tr>
                          <th>Hash Tab</th>
@@ -134,27 +134,39 @@
         </div>
         <script>
 
-            function sendQuery()
-            {
-               alert("send");
-               var url = "/sentiments/NEEDINPUT";
-               $http.get(url).then( function(response) {
-                $scope.sentimentdata = response.data;
-               });
-          }
 
-            function sentimentsController($scope,$http) {
+            angular.module('intervalExample', [])
+            .controller('sentimentsController', ['$scope', '$http','$interval',
+              function($scope, $http, $interval) {
+
                 $scope.sentimentdata = [];
-                var url = "/sentiments/refresh/mytopic";
-                 $http.get(url).then( function(response) {
-                  $scope.sentimentdata = response.data;
-                 });
-            
-            }
+
+                var stop;
+                $scope.startSentiments = function() {
+                    var queryString = $("#twitterQuery").val();
+                    //alert("start" + queryString);
+                    var url = "/sentiments/" + queryString;
+                    $http.get(url).then( function(response) {
+                     $scope.topic = response.data;
+                    });
+
+                  // Don't start a new fight if we are already fighting
+                  if ( angular.isDefined(stop) ) return;
+        
+                  stop = $interval(function() {
+        
+                     var url = "/sentiments/refresh/" + $scope.topic;
+                     $http.get(url).then( function(response) {
+                      $scope.sentimentdata = response.data;
+                     });
+                    }, 5000);
+                };
+        
+
+            }])      
+
          </script>
          
-           <script src = "https://ajax.googleapis.com/ajax/libs/angularjs/1.2.15/angular.min.js">
-        </script>
           
 
     </body>

@@ -58,8 +58,10 @@ public class SentimentResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("/refresh/{topic}")
-	public List<TwitterSentiment> refresh(@PathParam("topic") String query) {
+	public List<TwitterSentiment> refresh(@PathParam("topic") String topic) {
 
+		log.info("Refreshgin Topic:" + topic);
+		
 		List<TwitterSentiment> data = new ArrayList<TwitterSentiment>();
 
 		TwitterSentiment val = new TwitterSentiment("tag1", 22,"happy");

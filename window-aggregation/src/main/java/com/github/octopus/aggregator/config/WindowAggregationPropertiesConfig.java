@@ -30,4 +30,11 @@ public interface WindowAggregationPropertiesConfig {
 	 */
 	@ConfigProperty(name = "posts.store-name")
 	String postsStoreName();
+
+	/**
+	 * Gets the time window duration. Defaults to 10 seconds
+	 * @return The time window duration
+	 */
+	@ConfigProperty(name = "counts.time-window.duration.ms", defaultValue = "10000")
+	long aggregationTimeWindowMillis();
 }
