@@ -12,43 +12,53 @@ import org.acme.domain.TwitterSentiment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import twitter4j.FilterQuery;
+import twitter4j.StallWarning;
+import twitter4j.Status;
+import twitter4j.StatusDeletionNotice;
+import twitter4j.StatusListener;
+import twitter4j.TwitterException;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.conf.ConfigurationBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Path("/sentiments")
 public class SentimentResource {
 
-    public static final Logger log = LoggerFactory.getLogger(SentimentResource.class);
+    public static final Logger log = LoggerFactory.getLogger(SentimentResource.class);	
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("/hello")
-    public String  hello() {
-        return "hello world";
-    }
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/hello")
+	public String hello() {
+		return "hello world";
+	}
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/refresh/{topic}")
-    public List<TwitterSentiment> sentiments(@PathParam("topic") String topic) {
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	@Path("/{query}")
+	public String query(@PathParam("query") String query) {
 
-        log.info("Using Topic:" + topic);
+        log.info("Starting Query:" + query);
+		return "mytopic";
+	}
 
-        List<TwitterSentiment> data = new ArrayList<TwitterSentiment>();
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/refresh/{topic}")
+	public List<TwitterSentiment> refresh(@PathParam("topic") String query) {
 
-        TwitterSentiment val = new TwitterSentiment("tag1",22,"happy");
-        TwitterSentiment val2 = new TwitterSentiment("tag2",33,"sad");
-        data.add(val);
-        data.add(val2);
+		List<TwitterSentiment> data = new ArrayList<TwitterSentiment>();
 
-        return data;
-    }
+		TwitterSentiment val = new TwitterSentiment("tag1", 22,"happy");
+		TwitterSentiment val2 = new TwitterSentiment("tag2",15, "sad");
+		data.add(val);
+		data.add(val2);
+
+		return data;
+	}
 
 
-    @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    @Path("/{query}")
-    public String query(@PathParam("query") String query) {
-
-        //TODO : Start knative twitter querries
-        log.info("Using Query:" + query);
-        return "topica";
-    }
 }

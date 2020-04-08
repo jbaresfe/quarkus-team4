@@ -1,5 +1,6 @@
 ## Data format for Kafka topics
 ### Topic: All hashtags with metadata
+**Topic Name:** twitter-posts
 ```json
 {
   "query": "person/event/location to query from",
@@ -11,6 +12,7 @@
 ```
 
 ### Topic: windowed data
+**Topic Name:** hashtag-counts
 ```json
 {
   "startWindow": "timestamp of start of window data",
@@ -23,4 +25,3 @@
     ...
   ]
 }
-```
