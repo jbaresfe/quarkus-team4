@@ -1,11 +1,8 @@
 
 package com.github.octopus.aggregator.rest;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -23,10 +20,10 @@ import org.slf4j.LoggerFactory;
 import com.github.octopus.aggregator.config.TwitterPropertiesConfig;
 import com.github.octopus.aggregator.config.WindowAggregationPropertiesConfig;
 import com.github.octopus.aggregator.model.TwitterPost;
-import com.github.octopus.aggregator.util.FunctionalReadWriteLockGuard;
 import com.github.octopus.aggregator.util.TwitterFeedProcessor;
-import com.github.octopus.aggregator.util.TwitterFeedProcessorHolder;
-import io.quarkus.scheduler.Scheduled;
+import twitter4j.Twitter;
+import twitter4j.TwitterFactory;
+import twitter4j.conf.ConfigurationBuilder;
 
 @Path("/twitter")
 public class TwitterResource {
@@ -35,35 +32,30 @@ public class TwitterResource {
 	private final TwitterPropertiesConfig configtwitter;
 	private final WindowAggregationPropertiesConfig config;
 	private final Emitter<TwitterPost> postEmitter;
-	private final List<TwitterFeedProcessorHolder> runningProcessors = new ArrayList<>();
-	private final FunctionalReadWriteLockGuard lockGuard = new FunctionalReadWriteLockGuard(new ReentrantReadWriteLock(true));
+	private final Twitter twitter;
 
 	@Inject
 	public TwitterResource(WindowAggregationPropertiesConfig config, TwitterPropertiesConfig configtwitter, @Channel("twitter-posts-out") Emitter<TwitterPost> postEmitter) {
 		this.config = config;
 		this.postEmitter = postEmitter;
 		this.configtwitter = configtwitter;
+		this.twitter = new TwitterFactory(getConfigurationBuilder().build()).getInstance();
+	}
+
+	private ConfigurationBuilder getConfigurationBuilder() {
+		ConfigurationBuilder cb = new ConfigurationBuilder();
+		return cb.setDebugEnabled(true).setOAuthConsumerKey(this.configtwitter.consumerKey())
+			.setOAuthConsumerSecret(this.configtwitter.consumerSecret())
+			.setOAuthAccessToken(this.configtwitter.accessToken())
+			.setOAuthAccessTokenSecret(this.configtwitter.accessTokenSecret());
 	}
 
 	@GET
 	@Path("/{query}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response streamTwitter(@PathParam("query") String query) {
-		TwitterFeedProcessor twitterFeedProcessor = new TwitterFeedProcessor(this.postEmitter, this.configtwitter, query);
-		this.lockGuard.doInWriteLock(() -> this.runningProcessors.add(new TwitterFeedProcessorHolder(twitterFeedProcessor, EXECUTOR_SERVICE.submit(twitterFeedProcessor))));
-
+		TwitterFeedProcessor twitterFeedProcessor = new TwitterFeedProcessor(this.postEmitter, this.twitter, query);
+		EXECUTOR_SERVICE.submit(twitterFeedProcessor);
 		return Response.noContent().build();
-	}
-
-	@Scheduled(every = "1m")
-	public void stopThreads() {
-		this.lockGuard.doInWriteLock(() -> {
-			this.runningProcessors.forEach(processor -> {
-				processor.getTwitterFeedProcessor().stop();
-				processor.getProcessorFuture().cancel(false);
-			});
-
-			this.runningProcessors.clear();
-		});
 	}
 }
