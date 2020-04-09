@@ -1,5 +1,6 @@
 package org.acme.domain;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +12,9 @@ import java.util.stream.Collectors;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
-public class TwitterPost {
+public class TwitterPost implements Serializable{
+	private static final long serialVersionUID = 1L;
+	
 	private String query;
 	private String handle;
 	private Instant timestamp;
