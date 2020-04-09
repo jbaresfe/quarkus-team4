@@ -22,6 +22,7 @@ import java.util.Iterator;
 import org.acme.domain.TwitterPost;
 import org.acme.domain.TwitterSentiment;
 import org.acme.domain.TwitterSentimentRevised;
+import org.acme.domain.TwitterSentimentRevised2;
 import org.acme.SentimentAnalysis;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,7 @@ public class TwitterResource {
 
 		TwitterStream twitterStream = new TwitterStreamFactory(getConfigurationBuilder().build()).getInstance();
 		List<String> tweets = new ArrayList<String>();
+		List<TwitterPost> twitterPosts = new ArrayList<TwitterPost>();
 
 
 		StatusListener statusListener = new StatusListener() {
@@ -91,40 +93,17 @@ public class TwitterResource {
 				}
 
 				TwitterPost somePost = new TwitterPost(query, handle, timestamp, post, hashtagList);
+				twitterPosts.add(somePost);
 				
-				FileOutputStream fileOut = null;
-				ObjectOutputStream objectOut = null;
+				TwitterSentimentRevised2 q =  SentimentAnalysis.aggregateSentimentAnalyzer2(query, twitterPosts);
 				
-				try {
-					fileOut = new FileOutputStream(new File("/home/rassmith/quarkus-team4/octopus/src/main/java/org/acme/coronavirus.txt"));
-		            objectOut = new ObjectOutputStream(fileOut);
-		            objectOut.writeObject(somePost);
-		            objectOut.close();
-		            
-		            FileInputStream fi = new FileInputStream("/home/rassmith/quarkus-team4/octopus/src/main/java/org/acme/coronavirus.txt");
-					ObjectInputStream oi = new ObjectInputStream(fi);
-
-					// Read objects
-					//Object spost =  oi.readObject();
-					TwitterPost t = (TwitterPost) oi.readObject();
-					
-					System.out.println(t.toString());
-					oi.close();
-		            
-				} catch (FileNotFoundException e) {
-					System.out.println("File not found");
-				} catch (IOException e) {
-					System.out.println("Error initializing stream");
-				} catch (ClassNotFoundException e) {
-					System.out.println("Error initializing stream");
-				} 
+				System.out.println("Twitter Post: " + status.getText());
+				System.out.println(q.toString());
 				
-				
-
 
 				String sentiment = SentimentAnalysis.calculateSentiment(status.getText().toString());
-				TwitterSentimentRevised someSentiment = new TwitterSentimentRevised(query, status.getText(),sentiment);    
-				System.out.println(someSentiment.toString());
+				//TwitterSentimentRevised someSentiment = new TwitterSentimentRevised(query, status.getText(),sentiment);    
+				//System.out.println(someSentiment.toString());
 			}
 
 			public void onException(Exception ex) {
@@ -187,10 +166,16 @@ public class TwitterResource {
 				String post = status.getText().toString();
 				List<String> hashtagList = new ArrayList<String>();
 				HashtagEntity[] tags = status.getHashtagEntities();
+				for(HashtagEntity tag: tags) {
+					hashtagList.add(tag.getText());
+				}
 
 				TwitterPost somePost = new TwitterPost(query, handle, timestamp, post, hashtagList);
 
 				twitterPosts.add(somePost);
+				
+				//TwitterSentiment someSentiment = SentimentAnalysis.aggregateSentimentAnalyzer(query, twitterPosts);
+				//System.out.println(someSentiment.toString());
 
 			}
 
@@ -216,7 +201,7 @@ public class TwitterResource {
 
 			public void onStallWarning(StallWarning warning) {
 				// TODO Auto-generated method stub
-
+				
 			}
 		};
 

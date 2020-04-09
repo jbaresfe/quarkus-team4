@@ -11,6 +11,7 @@ import org.acme.*;
 import org.acme.domain.TwitterPost;
 import org.acme.domain.TwitterSentiment;
 import org.acme.domain.TwitterSentimentRevised;
+import org.acme.domain.TwitterSentimentRevised2;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
 import edu.stanford.nlp.neural.rnn.RNNCoreAnnotations;
@@ -120,7 +121,7 @@ public class SentimentAnalysis {
 		}
 	
 		// To use for analyzing List of TwitterPosts
-		public static TwitterSentiment aggregateSentimentAnalyzer(String query, List<TwitterPost> twitterPosts) {
+		public static TwitterSentimentRevised2 aggregateSentimentAnalyzer2(String query, List<TwitterPost> twitterPosts) {
 				
 				Properties props = new Properties();
 		
@@ -167,8 +168,10 @@ public class SentimentAnalysis {
 			        }
 		        }
 		        
-		        int avg = sum / sentList.size();
-		        TwitterSentiment sentimentresult = new TwitterSentiment(query, sentList.size(), map.get(avg));
+		        double avg = sum / sentList.size();
+		        int finalAvg = (int) Math.ceil(avg);
+		        //TwitterSentiment sentimentresult = new TwitterSentiment(query, sentList.size(), map.get(avg));
+		        TwitterSentimentRevised2 sentimentresult = new TwitterSentimentRevised2(query, sentList.size(), map.get(finalAvg));
 		        
 		        return sentimentresult;	
 			}
@@ -177,5 +180,4 @@ public class SentimentAnalysis {
 			TwitterPost newPost = new TwitterPost("user1", "edeandrea", Instant.now(), "Man I really hope the #sentimentanalyzer works", List.of("sentimentanalyzer")),
 			new TwitterPost("user2", "realDonaldTrump", Instant.now(), "The #economy is doing #tremendous!", List.of("economy", "tremendous"))
 		}*/
-		
 }
