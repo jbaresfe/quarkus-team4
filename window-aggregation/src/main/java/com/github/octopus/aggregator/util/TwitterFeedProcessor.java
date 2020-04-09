@@ -17,7 +17,7 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class TwitterFeedProcessor implements Runnable {
+public final class TwitterFeedProcessor implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFeedProcessor.class);
 	private final Emitter<TwitterPost> postEmitter;
 	private final Twitter twitter;
@@ -42,6 +42,7 @@ public class TwitterFeedProcessor implements Runnable {
 	}
 
 	private void processTweet(Status tweet) {
+		// Process the tweet
 		String tweetString = this.query + "@" + tweet.getUser().getScreenName() + ":" + tweet.getCreatedAt().toString() + tweet.getText() + tweet.getHashtagEntities();
 		TwitterFeedProcessor.LOGGER.info("tweet string = {}", tweetString);
 		String handle = String.format("@%s", tweet.getUser().getScreenName());
@@ -55,7 +56,10 @@ public class TwitterFeedProcessor implements Runnable {
 				.collect(Collectors.toList())
 		);
 
+		// Create our POJO that will be sent to Kafka
 		TwitterPost twitterPost = new TwitterPost(this.query, handle, timestamp, post, hashtagList);
+
+		// Send to Kafka
 		this.postEmitter.send(twitterPost);
 		TwitterFeedProcessor.LOGGER.info("Sent post to kafka: {}", twitterPost);
 	}
