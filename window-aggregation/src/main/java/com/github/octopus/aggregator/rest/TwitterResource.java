@@ -117,11 +117,13 @@ public class TwitterResource {
 		filter.track(keywords);
 		twitterStream.addListener(statusListener);
 		twitterStream.filter(filter);
-		//Thread.sleep(500);
-		//twitterStream.shutdown();
+		Thread.sleep(30000);
+		twitterStream.shutdown();
 
 		List<TwitterPost> posts = twitterPosts;
 		posts.forEach(this.postEmitter::send);
+
+		LOGGER.info("After posting into Kafka");
 
 		return posts;
 	}

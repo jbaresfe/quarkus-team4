@@ -28,3 +28,9 @@ Or, if you don't have GraalVM installed, you can run the native executable build
 You can then execute your native executable with: `./target/window-aggregation-1.0.0-SNAPSHOT-runner`
 
 If you want to learn more about building native executables, please consult https://quarkus.io/guides/building-native-image-guide.
+
+## Deploy into Openshift
+```
+./mvnw clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.openshift.env-vars.TWITTER_API_CONSUMER_KEY.value= -Dquarkus.openshift.env-vars.TWITTER_API_CONSUMER_SECRET.value= -Dquarkus.openshift.env-vars.TWITTER_API_ACCESS_TOKEN.value= -Dquarkus.openshift.env-vars.TWITTER_API_ACCESS_TOKEN_SECRET.value= -DskipTests
+```
+Add Twitter API keys
