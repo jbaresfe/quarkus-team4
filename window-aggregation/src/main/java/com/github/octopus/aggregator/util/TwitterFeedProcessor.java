@@ -10,72 +10,53 @@ import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.octopus.aggregator.config.TwitterPropertiesConfig;
 import com.github.octopus.aggregator.model.TwitterPost;
-import twitter4j.FilterQuery;
 import twitter4j.HashtagEntity;
+import twitter4j.Query;
 import twitter4j.Status;
-import twitter4j.StatusAdapter;
-import twitter4j.StatusListener;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.conf.ConfigurationBuilder;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
 
 public class TwitterFeedProcessor implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFeedProcessor.class);
-	private final TwitterPropertiesConfig configtwitter;
 	private final Emitter<TwitterPost> postEmitter;
-	private final TwitterStream twitterStream;
+	private final Twitter twitter;
 	private final String query;
-	private Instant startTime;
 
-	public TwitterFeedProcessor(Emitter<TwitterPost> postEmitter, TwitterPropertiesConfig configtwitter, String query)
-	{
+	public TwitterFeedProcessor(Emitter<TwitterPost> postEmitter, Twitter twitter, String query) {
 		this.postEmitter = postEmitter;
+		this.twitter = twitter;
 		this.query = query;
-		this.configtwitter = configtwitter;
-		this.twitterStream = new TwitterStreamFactory(getConfigurationBuilder().build()).getInstance();
-	}
-
-	private ConfigurationBuilder getConfigurationBuilder() {
-		ConfigurationBuilder cb = new ConfigurationBuilder();
-		return cb.setDebugEnabled(true).setOAuthConsumerKey(this.configtwitter.consumerKey())
-			.setOAuthConsumerSecret(this.configtwitter.consumerSecret())
-			.setOAuthAccessToken(this.configtwitter.accessToken())
-			.setOAuthAccessTokenSecret(this.configtwitter.accessTokenSecret());
-	}
-
-	public void stop() {
-		this.twitterStream.clearListeners();
 	}
 
 	@Override
 	public void run() {
-		this.startTime = Instant.now();
-		StatusListener statusListener = new StatusAdapter() {
-			@Override
-			public void onStatus(Status status) {
-				String tweetString = TwitterFeedProcessor.this.query + "@" + status.getUser().getScreenName() + ":" + status.getCreatedAt().toString() + status.getText() + status.getHashtagEntities();
-				TwitterFeedProcessor.LOGGER.info("tweet string = {}", tweetString);
-				String handle = String.format("@%s", status.getUser().getScreenName());
-				Instant timestamp = status.getCreatedAt().toInstant();
-				String post = status.getText();
-				HashtagEntity[] tags = status.getHashtagEntities();
+		try {
+			this.twitter.search(new Query(String.format("#%s", this.query)))
+				.getTweets()
+				.forEach(this::processTweet);
+		}
+		catch (TwitterException ex) {
+			LOGGER.error("Error getting tweets: {}", ex.getMessage(), ex);
+		}
+	}
 
-				List<String> hashtagList = new ArrayList<>(
-					Arrays.stream(tags)
-						.map(HashtagEntity::getText)
-						.collect(Collectors.toList())
-				);
+	private void processTweet(Status tweet) {
+		String tweetString = this.query + "@" + tweet.getUser().getScreenName() + ":" + tweet.getCreatedAt().toString() + tweet.getText() + tweet.getHashtagEntities();
+		TwitterFeedProcessor.LOGGER.info("tweet string = {}", tweetString);
+		String handle = String.format("@%s", tweet.getUser().getScreenName());
+		Instant timestamp = tweet.getCreatedAt().toInstant();
+		String post = tweet.getText();
+		HashtagEntity[] tags = tweet.getHashtagEntities();
 
-				TwitterPost twitterPost = new TwitterPost(TwitterFeedProcessor.this.query, handle, timestamp, post, hashtagList);
-				TwitterFeedProcessor.this.postEmitter.send(twitterPost);
-				TwitterFeedProcessor.LOGGER.info("Sent post to kafka: {}", twitterPost);
-			}
-		};
+		List<String> hashtagList = new ArrayList<>(
+			Arrays.stream(tags)
+				.map(HashtagEntity::getText)
+				.collect(Collectors.toList())
+		);
 
-		this.twitterStream.addListener(statusListener);
-		this.twitterStream.filter(new FilterQuery(String.format("#%s", this.query)));
-//		Thread.sleep(30000);
+		TwitterPost twitterPost = new TwitterPost(this.query, handle, timestamp, post, hashtagList);
+		this.postEmitter.send(twitterPost);
+		TwitterFeedProcessor.LOGGER.info("Sent post to kafka: {}", twitterPost);
 	}
 }
