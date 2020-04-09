@@ -54,8 +54,7 @@ public class TwitterResource {
 	@Path("/{query}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response streamTwitter(@PathParam("query") String query) {
-		TwitterFeedProcessor twitterFeedProcessor = new TwitterFeedProcessor(this.postEmitter, this.twitter, query);
-		EXECUTOR_SERVICE.submit(twitterFeedProcessor);
+		EXECUTOR_SERVICE.submit(new TwitterFeedProcessor(this.postEmitter, this.twitter, query));
 		return Response.noContent().build();
 	}
 }
