@@ -12,6 +12,17 @@
                 font-weight: 400;
                 line-height: 1.5;
             }
+
+            div.header {
+                
+                text-align: left;
+                font-size: 7.5rem;
+                font-weight: 400;
+            }
+
+            table.sentiments {
+                border: 1;
+            }
     
             h1 {
                 font-size: 2.5rem;
@@ -102,30 +113,46 @@
         
     </head>
     <body ng-app="intervalExample">
-        <div class="header"><img height="200" width="220" src="octopus.png"></div>
-        <div class="container">
+        <div class="header">&nbsp;&nbsp;TEAM &nbsp;<img height="140" width="140" src="octopus.png"></div>
+    <div class="container">
+            <div class="xleft-column">&nbsp;&nbsp;&nbsp;
+            </div>
             <div class="left-column">
 
-                <p class="lead">Octopus Twitter Sentiments Results</p>
+                <h1>Octopus Twitter Sentiments Demo</h1>
                 <div ng-controller = "sentimentsController">
                     <div>
                         <p> Enter a query to get current Twitter Sentements</p>
                         Query: <input type="text" id="twitterQuery" name="twitterQuery" value="@RedHat"> <input data-ng-click="startSentiments()" type="button" name="startQuery" value="Go">
                     </div>
                     
-                   <table>
-                      <tr>
-                         <th>Hash Tab</th>
-                         <th>Count</th>
-                         <th>Sentiment</th>
-                      </tr>
-                   
-                      <tr ng-repeat = "sentiment in sentimentdata">
-                         <td>{{ sentiment.hashtag }}</td>
-                         <td>{{ sentiment.count }}</td>
-                         <td><img height="30" width="30" src="{{ sentiment.sentiment }}-face.jpeg"></td>
-                      </tr>
-                   </table>
+                   <table class="sentiments" >
+                        <tr>
+                           <th>Start Time</th>
+                           <th>End Time</th>
+                           <th>Hash Tags</th>
+                        </tr>
+                     
+                        <tr ng-repeat = "sentiment in sentimentdata">
+                           <td>{{ sentiment.startWindow }}</td>
+                           <td>{{ sentiment.endWindow }}</td>
+                           <td>
+                            <table>
+                                <tr>
+                                    <th>Count</th>
+                                    <th>Tag</th>
+                                    <th>Sentiment</th>
+                                 </tr>
+                                 <tr ng-repeat = "hashtag in sentiment.metrics">
+                                   <td>{{ hashtag.count }}</td>
+                                   <td>{{ hashtag.hashtag }}</td>
+                                   <td><img height="30" width="30" src="happy-face.jpeg"></td>
+                             </tr>
+                          </table>
+                          </td>
+                        </tr>
+                     </table>
+                    
                 </div>
           
             </div>
@@ -139,11 +166,14 @@
             .controller('sentimentsController', ['$scope', '$http','$interval',
               function($scope, $http, $interval) {
 
-                $scope.sentimentdata = [];
+                $scope.sentimentdata = [{"endWindow":"2020-04-09T16:26:55.000322Z","metrics":[{"count":1,"hashtag":"inittag1"},{"count":1,"hashtag":"economy"},{"count":1,"hashtag":"tremendous"}],"startWindow":"2020-04-09T16:26:55.000303Z"}];
 
                 var stop;
+
+                var myArray = [];
                 $scope.startSentiments = function() {
                     var queryString = $("#twitterQuery").val();
+                    $scope.sentimentdata = "hello";
                     //alert("start" + queryString);
                     var url = "/sentiments/" + queryString;
                     $http.get(url).then( function(response) {
@@ -152,18 +182,41 @@
 
                   // Don't start a new fight if we are already fighting
                   if ( angular.isDefined(stop) ) return;
-        
-                  stop = $interval(function() {
-        
-                     var url = "/sentiments/refresh/" + $scope.topic;
-                     $http.get(url).then( function(response) {
-                      $scope.sentimentdata = response.data;
-                     });
-                    }, 5000);
-                };
-        
 
+        
+                  //stop = $interval(function() {
+
+        
+                    console.log("Starting Event listenter ++++" + $scope);
+                    source = new EventSource("/sentiments/refresh3/test");
+                    source.addEventListener('message', function(e) {
+                        console.log(e.data);
+                        var jd = JSON.parse(e.data);
+                        console.log("Updated" + jd);
+                        $scope.sentimentdata.push(jd);
+    
+                      }, false);
+                      
+                      source.addEventListener('open', function(e) {
+                        // Connection was opened.
+                      }, false);
+                      
+                      source.addEventListener('error', function(e) {
+                        if (e.readyState == EventSource.CLOSED) {
+                          // Connection was closed.
+                        }
+                      }, false);
+
+                     //var url = "/sentiments/refresh3/" + $scope.topic;
+                     //$http.get(url).then( function(response) {
+                      //$scope.sentimentdata = response.data;
+                     //});
+                    //}, 5000);
+                };
+
+                
             }])      
+
 
          </script>
          

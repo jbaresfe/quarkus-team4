@@ -8,9 +8,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.List;
 import java.util.ArrayList;
-import org.acme.domain.TwitterSentiment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.jboss.resteasy.annotations.SseElementType;
 
 import twitter4j.FilterQuery;
 import twitter4j.StallWarning;
@@ -23,9 +23,19 @@ import twitter4j.TwitterStreamFactory;
 import twitter4j.conf.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.reactivestreams.Publisher;
+import io.smallrye.reactive.messaging.annotations.Channel;
+import javax.inject.Inject;
+
+import org.acme.domain.TwitterSentiment;
+import org.acme.domain.Aggregation;
 
 @Path("/sentiments")
 public class SentimentResource {
+
+    @Inject
+    @Channel("hashtag-counts")
+    Publisher<Aggregation> _sentiments;
 
     public static final Logger log = LoggerFactory.getLogger(SentimentResource.class);	
 
@@ -33,7 +43,7 @@ public class SentimentResource {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/hello")
 	public String hello() {
-		return "hello world";
+		return "hello";
 	}
 
 	@GET
@@ -41,25 +51,21 @@ public class SentimentResource {
 	@Path("/{query}")
 	public String query(@PathParam("query") String query) {
 
-        log.info("Starting Query:" + query);
+		log.info("Starting Query:" + query);
+		log.info("KAFKA DATA:" + _sentiments);
+		//TODO: Hook in backend Service
 		return "mytopic";
 	}
 
+
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/refresh/{topic}")
-	public List<TwitterSentiment> refresh(@PathParam("topic") String topic) {
+	@Produces(MediaType.SERVER_SENT_EVENTS)
+	@SseElementType(MediaType.APPLICATION_JSON)
+	@Path("/refresh3/{topic}")
+	public Publisher<Aggregation> refreshstring(@PathParam("topic") String topic) {
 
-		log.info("Refreshgin Topic:" + topic);
-		
-		List<TwitterSentiment> data = new ArrayList<TwitterSentiment>();
-
-		TwitterSentiment val = new TwitterSentiment("tag1", 22,"happy");
-		TwitterSentiment val2 = new TwitterSentiment("tag2",15, "sad");
-		data.add(val);
-		data.add(val2);
-
-		return data;
+		log.info("Refresh string Topic:" + topic);
+		return _sentiments;
 	}
 
 
