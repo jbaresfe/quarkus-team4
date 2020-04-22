@@ -102,13 +102,14 @@
                 padding-top: 0;
                 font-weight: 200;
             }
-            border-left: 0.3rem solid #00A1E2;
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .sentiments table, th, td {
-            border: 1px solid blue;
-        }    
+            .right-section ul {
+                border-left: 0.3rem solid #00A1E2;
+                list-style-type: none;
+                padding-left: 0;
+            }
+            .sentiments table, th, td {
+              border: 1px solid blue;
+           }    
     </style>
     
 </head>
@@ -133,14 +134,14 @@
                         <th>End Time</th>
                         <th>Hash Tags</th>
                     </tr>
-                </table>
+                                        .right-section ul {
+                    </table>
+                    
+                </div>
                 
             </div>
-            
-        </div>
-        .right-section ul {
-        <div class="right-column">
-        </div>
+            <div class="right-column">
+            </div>
         </div>
         <script>
             
@@ -183,14 +184,14 @@
                     //stop = $interval(function() {
                         
                         
+                        
                         console.log("Starting Event listenter ++++" + $scope);
                         $scope.source = new EventSource("/sentiments/refresh3/test");
-                        $scope.source.addEventListener('message', function(e) {
-                            console.log(e.data);
-                            console.log("Current Msg:" + $scope.testMsg);
-                            
-                            var jd = JSON.parse(e.data);
-                            console.log("Updated" + jd);
+                    $scope.source.addEventListener('message', function(e) {
+                        console.log(e.data);
+                        console.log("Current Msg:" + $scope.testMsg);
+                        var jd = JSON.parse(e.data);
+                        console.log("Updated" + jd);
                         $scope.$broadcast('eventName', { message: jd });
                         
                     }, false);
@@ -205,6 +206,6 @@
         
         
         
-        newRow += "<tr><td>" + hashVal.count + "</td>";
     </body>
     </html>
+    newRow += "<tr><td>" + hashVal.count + "</td>";
