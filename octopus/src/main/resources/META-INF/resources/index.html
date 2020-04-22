@@ -102,65 +102,63 @@
                 padding-top: 0;
                 font-weight: 200;
             }
+            border-left: 0.3rem solid #00A1E2;
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .sentiments table, th, td {
+            border: 1px solid blue;
+        }    
+    </style>
     
-            .right-section ul {
-                border-left: 0.3rem solid #00A1E2;
-                list-style-type: none;
-                padding-left: 0;
-            }
-            table, th, td {
-                border: 1px solid blue;
-              }    
-        </style>
-        
-    </head>
-    <body ng-app="intervalExample">
-        <div class="header">&nbsp;&nbsp;TEAM &nbsp;<img height="140" width="140" src="octopus.png"></div>
+</head>
+<body ng-app="intervalExample">
+    <div class="header">&nbsp;&nbsp;TEAM &nbsp;<img height="140" width="140" src="octopus.png"></div>
     <div class="container">
-            <div class="xleft-column">&nbsp;&nbsp;&nbsp;
-            </div>
-            <div class="left-column">
-
-                <h1>Octopus Twitter Sentiments Demo</h1>
-                <div ng-controller="sentimentsController">
-
-                    <div>
-                        <p> Enter a query to get current Twitter Sentements</p>
-                        Query: <input type="text" id="twitterQuery" name="twitterQuery" ng-value="testMsg"> <input data-ng-click="startSentiments()" type="button" name="startQuery" value="Go">
-                    </div>
-                    
-                    <table id="sentTable" name="sentTable" class="sentiments">
-                        <tr>
-                           <th>Start Time</th>
-                           <th>End Time</th>
-                           <th>Hash Tags</th>
-                        </tr>
-                    </table>
-                    
+        <div class="xleft-column">&nbsp;&nbsp;&nbsp;
+        </div>
+        <div class="left-column">
+            
+            <h1>Octopus Twitter Sentiments Demo</h1>
+            <div ng-controller="sentimentsController">
+                
+                <div>
+                    <p> Enter a query to get current Twitter Sentements</p>
+                    Query: <input type="text" id="twitterQuery" name="twitterQuery" ng-value="testMsg"> <input data-ng-click="startSentiments()" type="button" name="startQuery" value="Go">
                 </div>
-          
+                
+                <table id="sentTable" name="sentTable" class="sentiments">
+                    <tr>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Hash Tags</th>
+                    </tr>
+                </table>
+                
             </div>
-            <div class="right-column">
-            </div>
+            
+        </div>
+        .right-section ul {
+        <div class="right-column">
+        </div>
         </div>
         <script>
-
-
+            
+            
             angular.module('intervalExample', [])
             .controller('sentimentsController', ['$scope', '$http','$interval',
-              function($scope, $http, $interval) {
-
+            function($scope, $http, $interval) {
+                
                 $scope.testMsg = "redhat";
-
+                
                 $scope.$on('eventName', function (event, args) {
                     console.log(args.message);
                     var newRow = "<tr><td>" + args.message.startWindow + "</td><td>" 
                                  + args.message.endWindow + "</td><td>";
-                    newRow += "<table><tr><th>Count</th><th>Tag</th><th>Sentiment</th></tr>";
-                    for (i=0;i<args.message.metrics.length;i++)
-                    {
-                        var hashVal = args.message.metrics[i];
-                        newRow += "<tr><td>" + hashVal.count + "</td>";
+                                     newRow += "<table><tr><th>Count</th><th>Tag</th><th>Sentiment</th></tr>";
+                                        for (i=0;i<args.message.metrics.length;i++)
+                                        {
+                                            var hashVal = args.message.metrics[i];
                         newRow += "<td>" + hashVal.hashtag + "</td>";
                         newRow += "<td><img height='30' width='30' src='happy-face.jpeg'></td>";
                         newRow += "</tr>";
@@ -168,43 +166,45 @@
                     newRow += "</table></td></tr>";
                     $('#sentTable').append(newRow);
                 });
-
+                
                 var myArray = [];
                 $scope.startSentiments = function() {
                     var queryString = $("#twitterQuery").val();
                     //alert("start" + queryString);
                     var url = "/sentiments/query/" + queryString;
                     $http.get(url).then( function(response) {
-                     $scope.topic = response.data;
+                        $scope.topic = response.data;
                     });
-
-                  // Don't start a new fight if we are already fighting
-                  if ( angular.isDefined(stop) ) return;
-
-        
-                  //stop = $interval(function() {
-
-        
-                    console.log("Starting Event listenter ++++" + $scope);
-                    $scope.source = new EventSource("/sentiments/refresh3/test");
-                    $scope.source.addEventListener('message', function(e) {
-                        console.log(e.data);
-                        console.log("Current Msg:" + $scope.testMsg);
-                        var jd = JSON.parse(e.data);
-                        console.log("Updated" + jd);
+                    
+                    // Don't start a new fight if we are already fighting
+                    if ( angular.isDefined(stop) ) return;
+                    
+                    
+                    //stop = $interval(function() {
+                        
+                        
+                        console.log("Starting Event listenter ++++" + $scope);
+                        $scope.source = new EventSource("/sentiments/refresh3/test");
+                        $scope.source.addEventListener('message', function(e) {
+                            console.log(e.data);
+                            console.log("Current Msg:" + $scope.testMsg);
+                            
+                            var jd = JSON.parse(e.data);
+                            console.log("Updated" + jd);
                         $scope.$broadcast('eventName', { message: jd });
-    
-                      }, false);
-                      
+                        
+                    }, false);
+                    
                 };
-
+                
                 
             }])      
-
-
-         </script>
-         
-          
-
+            
+            
+        </script>
+        
+        
+        
+        newRow += "<tr><td>" + hashVal.count + "</td>";
     </body>
-</html>
+    </html>
