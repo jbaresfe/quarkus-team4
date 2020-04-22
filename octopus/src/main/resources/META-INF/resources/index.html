@@ -129,12 +129,17 @@
                 </div>
                 
                 <table id="sentTable" name="sentTable" class="sentiments">
+                    <thead>
                     <tr>
                         <th>Start Time</th>
                         <th>End Time</th>
                         <th>Hash Tags</th>
                     </tr>
-                    </table>
+                    </thead>
+                    <tbody id="tblBody">
+
+                    </tbody>
+                </table>
                     
                 </div>
                 
@@ -177,9 +182,8 @@
                         $scope.topic = response.data;
                     });
                     
-                    // Don't start a new fight if we are already fighting
-                    if ( angular.isDefined(stop) ) return;
-                    
+                    $('#tblBody').empty();
+
                     console.log("Starting Event listenter ++++" + $scope);
                     $scope.source = new EventSource("/sentiments/refresh3/test");
                     $scope.source.addEventListener('message', function(e) {
