@@ -154,11 +154,12 @@
                 $scope.$on('eventName', function (event, args) {
                     console.log(args.message);
                     var newRow = "<tr><td>" + args.message.startWindow + "</td><td>" 
-                                 + args.message.endWindow + "</td><td>";
-                                     newRow += "<table><tr><th>Count</th><th>Tag</th><th>Sentiment</th></tr>";
-                                        for (i=0;i<args.message.metrics.length;i++)
-                                        {
-                                            var hashVal = args.message.metrics[i];
+                            + args.message.endWindow + "</td><td>";
+                    newRow += "<table><tr><th>Count</th><th>Tag</th><th>Sentiment</th></tr>";
+                    for (i=0;i<args.message.metrics.length;i++)
+                    {
+                        var hashVal = args.message.metrics[i];
+                        newRow += "<tr><td>" + hashVal.count + "</td>";
                         newRow += "<td>" + hashVal.hashtag + "</td>";
                         newRow += "<td><img height='30' width='30' src='happy-face.jpeg'></td>";
                         newRow += "</tr>";
@@ -179,19 +180,13 @@
                     // Don't start a new fight if we are already fighting
                     if ( angular.isDefined(stop) ) return;
                     
-                    
-                    //stop = $interval(function() {
-                        
-                        
-                        
-                        console.log("Starting Event listenter ++++" + $scope);
-                        $scope.source = new EventSource("/sentiments/refresh3/test");
+                    console.log("Starting Event listenter ++++" + $scope);
+                    $scope.source = new EventSource("/sentiments/refresh3/test");
                     $scope.source.addEventListener('message', function(e) {
-                        console.log(e.data);
-                        console.log("Current Msg:" + $scope.testMsg);
-                        var jd = JSON.parse(e.data);
-                        console.log("Updated" + jd);
-                        $scope.$broadcast('eventName', { message: jd });
+                      console.log(e.data);
+                      var jd = JSON.parse(e.data);
+                      console.log("Updated" + jd);
+                      $scope.$broadcast('eventName', { message: jd });
                         
                     }, false);
                     
@@ -207,4 +202,3 @@
         
     </body>
     </html>
-    newRow += "<tr><td>" + hashVal.count + "</td>";
