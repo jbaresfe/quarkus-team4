@@ -108,7 +108,9 @@
                 list-style-type: none;
                 padding-left: 0;
             }
-    
+            table, th, td {
+                border: 1px solid blue;
+              }    
         </style>
         
     </head>
@@ -120,38 +122,20 @@
             <div class="left-column">
 
                 <h1>Octopus Twitter Sentiments Demo</h1>
-                <div ng-controller = "sentimentsController">
+                <div ng-controller="sentimentsController">
+
                     <div>
                         <p> Enter a query to get current Twitter Sentements</p>
-                        Query: <input type="text" id="twitterQuery" name="twitterQuery" value="@RedHat"> <input data-ng-click="startSentiments()" type="button" name="startQuery" value="Go">
+                        Query: <input type="text" id="twitterQuery" name="twitterQuery" ng-value="testMsg"> <input data-ng-click="startSentiments()" type="button" name="startQuery" value="Go">
                     </div>
                     
-                   <table class="sentiments" >
+                    <table id="sentTable" name="sentTable" class="sentiments">
                         <tr>
                            <th>Start Time</th>
                            <th>End Time</th>
                            <th>Hash Tags</th>
                         </tr>
-                     
-                        <tr ng-repeat = "sentiment in sentimentdata">
-                           <td>{{ sentiment.startWindow }}</td>
-                           <td>{{ sentiment.endWindow }}</td>
-                           <td>
-                            <table>
-                                <tr>
-                                    <th>Count</th>
-                                    <th>Tag</th>
-                                    <th>Sentiment</th>
-                                 </tr>
-                                 <tr ng-repeat = "hashtag in sentiment.metrics">
-                                   <td>{{ hashtag.count }}</td>
-                                   <td>{{ hashtag.hashtag }}</td>
-                                   <td><img height="30" width="30" src="happy-face.jpeg"></td>
-                             </tr>
-                          </table>
-                          </td>
-                        </tr>
-                     </table>
+                    </table>
                     
                 </div>
           
@@ -166,16 +150,30 @@
             .controller('sentimentsController', ['$scope', '$http','$interval',
               function($scope, $http, $interval) {
 
-                $scope.sentimentdata = [{"endWindow":"2020-04-09T16:26:55.000322Z","metrics":[{"count":1,"hashtag":"inittag1"},{"count":1,"hashtag":"economy"},{"count":1,"hashtag":"tremendous"}],"startWindow":"2020-04-09T16:26:55.000303Z"}];
+                $scope.testMsg = "redhat";
 
-                var stop;
+                $scope.$on('eventName', function (event, args) {
+                    console.log(args.message);
+                    var newRow = "<tr><td>" + args.message.startWindow + "</td><td>" 
+                                 + args.message.endWindow + "</td><td>";
+                    newRow += "<table><tr><th>Count</th><th>Tag</th><th>Sentiment</th></tr>";
+                    for (i=0;i<args.message.metrics.length;i++)
+                    {
+                        var hashVal = args.message.metrics[i];
+                        newRow += "<tr><td>" + hashVal.count + "</td>";
+                        newRow += "<td>" + hashVal.hashtag + "</td>";
+                        newRow += "<td><img height='30' width='30' src='happy-face.jpeg'></td>";
+                        newRow += "</tr>";
+                    }
+                    newRow += "</table></td></tr>";
+                    $('#sentTable').append(newRow);
+                });
 
                 var myArray = [];
                 $scope.startSentiments = function() {
                     var queryString = $("#twitterQuery").val();
-                    $scope.sentimentdata = "hello";
                     //alert("start" + queryString);
-                    var url = "/sentiments/" + queryString;
+                    var url = "/sentiments/query/" + queryString;
                     $http.get(url).then( function(response) {
                      $scope.topic = response.data;
                     });
@@ -188,30 +186,16 @@
 
         
                     console.log("Starting Event listenter ++++" + $scope);
-                    source = new EventSource("/sentiments/refresh3/test");
-                    source.addEventListener('message', function(e) {
+                    $scope.source = new EventSource("/sentiments/refresh3/test");
+                    $scope.source.addEventListener('message', function(e) {
                         console.log(e.data);
+                        console.log("Current Msg:" + $scope.testMsg);
                         var jd = JSON.parse(e.data);
                         console.log("Updated" + jd);
-                        $scope.sentimentdata.push(jd);
+                        $scope.$broadcast('eventName', { message: jd });
     
                       }, false);
                       
-                      source.addEventListener('open', function(e) {
-                        // Connection was opened.
-                      }, false);
-                      
-                      source.addEventListener('error', function(e) {
-                        if (e.readyState == EventSource.CLOSED) {
-                          // Connection was closed.
-                        }
-                      }, false);
-
-                     //var url = "/sentiments/refresh3/" + $scope.topic;
-                     //$http.get(url).then( function(response) {
-                      //$scope.sentimentdata = response.data;
-                     //});
-                    //}, 5000);
                 };
 
                 

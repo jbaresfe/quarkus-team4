@@ -12,31 +12,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.jboss.resteasy.annotations.SseElementType;
 
-import twitter4j.FilterQuery;
-import twitter4j.StallWarning;
-import twitter4j.Status;
-import twitter4j.StatusDeletionNotice;
-import twitter4j.StatusListener;
-import twitter4j.TwitterException;
-import twitter4j.TwitterStream;
-import twitter4j.TwitterStreamFactory;
-import twitter4j.conf.ConfigurationBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.reactivestreams.Publisher;
 import io.smallrye.reactive.messaging.annotations.Channel;
 import javax.inject.Inject;
-
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.acme.domain.TwitterSentiment;
 import org.acme.domain.Aggregation;
+
 
 @Path("/sentiments")
 public class SentimentResource {
 
+	
+	@Inject
+    @RestClient
+    TwitterService twitterService;
+
     @Inject
     @Channel("hashtag-counts")
-    Publisher<Aggregation> _sentiments;
-
+	Publisher<Aggregation> _sentiments;
+	
     public static final Logger log = LoggerFactory.getLogger(SentimentResource.class);	
 
 	@GET
@@ -47,14 +44,22 @@ public class SentimentResource {
 	}
 
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+    @Path("/query/{topic}")
+    public javax.ws.rs.core.Response getTwitterSentiments(@PathParam("topic") String topic) {
+		log.info("Quering TopicXX:" + topic);
+		return twitterService.getByTopic(topic);
+
+    }
+
+	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	@Path("/{query}")
 	public String query(@PathParam("query") String query) {
 
 		log.info("Starting Query:" + query);
 		log.info("KAFKA DATA:" + _sentiments);
-		//TODO: Hook in backend Service
-		return "mytopic";
+		return query;
 	}
 
 
