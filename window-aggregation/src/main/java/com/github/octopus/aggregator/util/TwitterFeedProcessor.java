@@ -11,13 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.octopus.aggregator.model.TwitterPost;
-import com.github.octopus.aggregator.util.TwitterSentimentAnalyzer;
 import twitter4j.HashtagEntity;
 import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
-import com.github.octopus.aggregator.util.TwitterSentimentAnalyzer;
+
 
 public final class TwitterFeedProcessor implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFeedProcessor.class);
