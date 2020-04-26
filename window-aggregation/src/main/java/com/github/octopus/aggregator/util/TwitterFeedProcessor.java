@@ -11,11 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.octopus.aggregator.model.TwitterPost;
+import com.github.octopus.aggregator.util.TwitterSentimentAnalyzer;
 import twitter4j.HashtagEntity;
 import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
+import com.github.octopus.aggregator.util.TwitterSentimentAnalyzer;
 
 public final class TwitterFeedProcessor implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(TwitterFeedProcessor.class);
@@ -55,9 +57,11 @@ public final class TwitterFeedProcessor implements Runnable {
 				.map(HashtagEntity::getText)
 				.collect(Collectors.toList())
 		);
+		
+		int sentiment = TwitterSentimentAnalyzer.calculateSentiment(post);
 
 		// Create our POJO that will be sent to Kafka
-		TwitterPost twitterPost = new TwitterPost(this.query, handle, timestamp, post, hashtagList);
+		TwitterPost twitterPost = new TwitterPost(this.query, handle, timestamp, post, hashtagList, sentiment);
 
 		// Send to Kafka
 		this.postEmitter.send(twitterPost);

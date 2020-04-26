@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
 @RegisterForReflection
@@ -69,6 +70,11 @@ public class Aggregation {
 		this.metrics.stream()
 			.filter(metric -> postHashtags.contains(metric.getHashtag()))
 			.forEach(AggregationMetric::incrementCount);
+
+		
+		this.metrics.stream()
+		.filter(metric -> postHashtags.contains(metric.getHashtag()))
+		.collect(Collectors.averagingInt(AggregationMetric::getSentiment));
 
 		// Then go through all the hashtags which haven't yet been recorded
 		this.metrics.addAll(

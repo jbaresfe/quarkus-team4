@@ -17,12 +17,13 @@ public class TwitterPost {
 	private Instant timestamp;
 	private String post;
 	private List<String> hashtags = new ArrayList<>();
+	private int sentiment;
 
 	public TwitterPost() {
 
 	}
 
-	public TwitterPost(String query, String handle, Instant timestamp, String post, List<String> hashtags) {
+	public TwitterPost(String query, String handle, Instant timestamp, String post, List<String> hashtags, Integer sentiment) {
 		this.query = query;
 		this.handle = handle;
 		this.timestamp = timestamp;
@@ -33,6 +34,7 @@ public class TwitterPost {
 			.distinct()
 			.collect(Collectors.toList())
 		);
+		this.sentiment = sentiment;
 	}
 
 	public String getQuery() {
@@ -104,6 +106,14 @@ public class TwitterPost {
 		setHashtags(hashtags);
 		return this;
 	}
+	
+	public int getSentiment() {
+		return this.sentiment;
+	}
+
+	public void setSentiment(int sentiment) {
+		this.sentiment = sentiment;
+	}
 
 	@Override
 	public String toString() {
@@ -113,6 +123,7 @@ public class TwitterPost {
 			.add("timestamp=" + this.timestamp)
 			.add("post='" + this.post + "'")
 			.add("hashtags=" + this.hashtags)
+			.add("sentiment=" + this.sentiment)
 			.toString();
 	}
 }

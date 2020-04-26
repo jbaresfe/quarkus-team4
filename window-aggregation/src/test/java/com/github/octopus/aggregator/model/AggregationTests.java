@@ -38,23 +38,23 @@ class AggregationTests {
 		return Stream.of(
 			Arguments.of(
 				new Aggregation(),
-				new TwitterPost("query", "handle", NOW, "post", List.of("tag1")),
+				new TwitterPost("query", "handle", NOW, "post", List.of("tag1"), 0),
 				new Aggregation().withMetrics(List.of(new AggregationMetric("tag1")))
 			),
 			Arguments.of(
 				new Aggregation().withMetrics(List.of(new AggregationMetric("tag1"))),
-				new TwitterPost("query", "handle", NOW, "post", List.of("tag1")),
-				new Aggregation().withMetrics(List.of(new AggregationMetric("tag1", 2)))
+				new TwitterPost("query", "handle", NOW, "post", List.of("tag1"), 0),
+				new Aggregation().withMetrics(List.of(new AggregationMetric("tag1", 2, 0)))
 			),
 			Arguments.of(
 				new Aggregation(),
-				new TwitterPost("query", "handle", NOW, "post", List.of("tag1", "tag2")),
+				new TwitterPost("query", "handle", NOW, "post", List.of("tag1", "tag2"), 0),
 				new Aggregation().withMetrics(List.of(new AggregationMetric("tag1"), new AggregationMetric("tag2")))
 			),
 			Arguments.of(
 				new Aggregation().withMetrics(List.of(new AggregationMetric("tag1"))),
-				new TwitterPost("query", "handle", NOW, "post", List.of("tag1", "tag2")),
-				new Aggregation().withMetrics(List.of(new AggregationMetric("tag1", 2), new AggregationMetric("tag2")))
+				new TwitterPost("query", "handle", NOW, "post", List.of("tag1", "tag2"), 0),
+				new Aggregation().withMetrics(List.of(new AggregationMetric("tag1", 2, 0), new AggregationMetric("tag2")))
 			)
 		);
 	}

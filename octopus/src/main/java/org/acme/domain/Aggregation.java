@@ -62,6 +62,7 @@ public class Aggregation {
 
 		// First go through all the hashtags which have already been recorded and increment the count
 		Collection<String> postHashtags = post.getHashtags();
+		int sent = post.getSentiment();
 		Set<String> currentHashtags = this.metrics.stream()
 			.map(AggregationMetric::getHashtag)
 			.collect(Collectors.toSet());
@@ -69,6 +70,11 @@ public class Aggregation {
 		this.metrics.stream()
 			.filter(metric -> postHashtags.contains(metric.getHashtag()))
 			.forEach(AggregationMetric::incrementCount);
+		
+		this.metrics.stream()
+		.filter(metric -> postHashtags.contains(metric.getHashtag()))
+		.collect(Collectors.averagingInt(AggregationMetric::getSentiment));
+
 
 		// Then go through all the hashtags which haven't yet been recorded
 		this.metrics.addAll(

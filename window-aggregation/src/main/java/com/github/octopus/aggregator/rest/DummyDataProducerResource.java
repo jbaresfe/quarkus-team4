@@ -38,8 +38,8 @@ public class DummyDataProducerResource {
 
 	private static List<TwitterPost> generateData() {
 		return List.of(
-			new TwitterPost("user1", "edeandrea", Instant.now(), "Man I really hope the #sentimentanalyzer works", List.of("sentimentanalyzer")),
-			new TwitterPost("user2", "realDonaldTrump", Instant.now(), "The #economy is doing #tremendous!", List.of("economy", "tremendous"))
+			new TwitterPost("user1", "edeandrea", Instant.now(), "Man I really hope the #sentimentanalyzer works", List.of("sentimentanalyzer"), 0),
+			new TwitterPost("user2", "realDonaldTrump", Instant.now(), "The #economy is doing #tremendous!", List.of("economy", "tremendous"), 1)
 		);
 	}
 }

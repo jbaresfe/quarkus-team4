@@ -9,14 +9,16 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class AggregationMetric {
 	private String hashtag;
 	private long count = 0;
+	private int sentiment; 
 
-	public AggregationMetric(String hashtag, long count) {
+	public AggregationMetric(String hashtag, long count, int sentiment) {
 		this.hashtag = hashtag;
 		this.count = count;
+		this.sentiment = sentiment;
 	}
 
 	public AggregationMetric(String hashtag) {
-		this(hashtag, 1);
+		this(hashtag, 1, 2);
 	}
 
 	public AggregationMetric() {
@@ -52,6 +54,20 @@ public class AggregationMetric {
 		setCount(count);
 		return this;
 	}
+	
+	public int getSentiment() {
+		return this.sentiment;
+	}
+
+	public void setSentiment(int sentiment) {
+		this.sentiment = sentiment;
+	}
+	
+	/*public void updateSentiment() {
+		this.count++;
+		double avg = (this.sentiment + newSentiment / count;
+		this.sentiment = (int)Math.ceil(avg);
+	}*/
 
 	@Override
 	public boolean equals(Object o) {
@@ -77,6 +93,7 @@ public class AggregationMetric {
 		return new StringJoiner(", ", AggregationMetric.class.getSimpleName() + "[", "]")
 			.add("hashtag='" + this.hashtag + "'")
 			.add("count=" + this.count)
+			.add("sentiment=" + this.sentiment)
 			.toString();
 	}
 }

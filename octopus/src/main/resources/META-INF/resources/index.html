@@ -166,7 +166,7 @@
                         var hashVal = args.message.metrics[i];
                         newRow += "<tr><td>" + hashVal.count + "</td>";
                         newRow += "<td>" + hashVal.hashtag + "</td>";
-                        newRow += "<td><img height='30' width='30' src='happy-face.jpeg'></td>";
+                        newRow += "<td>" + hashVal.sentiment + "</td>";
                         newRow += "</tr>";
                     }
                     newRow += "</table></td></tr>";
@@ -184,7 +184,7 @@
                     
                     $('#tblBody').empty();
 
-                    console.log("Starting Event listenter ++++" + $scope);
+                    console.log("Starting Event listener ++++" + $scope);
                     $scope.source = new EventSource("/sentiments/refresh3/test");
                     $scope.source.addEventListener('message', function(e) {
                       console.log(e.data);
